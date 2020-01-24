@@ -30,7 +30,7 @@ class CordovaHttpUpload extends CordovaHttpBase {
       boolean followRedirects, String responseType, TLSConfiguration tlsConfiguration,
       Context applicationContext, CallbackContext callbackContext) {
 
-    super("POST", url, headers, timeout, followRedirects, responseType, tlsConfiguration, callbackContext);
+    super("PUT", url, headers, timeout, followRedirects, responseType, tlsConfiguration, callbackContext);
     this.filePaths = filePaths;
     this.uploadNames = uploadNames;
     this.applicationContext = applicationContext;
@@ -47,19 +47,15 @@ class CordovaHttpUpload extends CordovaHttpBase {
       // File Scheme
       if (ContentResolver.SCHEME_FILE.equals(fileUri.getScheme())) {
         File file = new File(new URI(filePath));
-        String fileName = file.getName().trim();
-        String mimeType = this.getMimeTypeFromFileName(fileName);
 
-        request.part(uploadName, fileName, mimeType, file);
+        request.send(file);
       }
 
       // Content Scheme
       if (ContentResolver.SCHEME_CONTENT.equals(fileUri.getScheme())) {
         InputStream inputStream = this.applicationContext.getContentResolver().openInputStream(fileUri);
-        String fileName = this.getFileNameFromContentScheme(fileUri, this.applicationContext).trim();
-        String mimeType = this.getMimeTypeFromFileName(fileName);
 
-        request.part(uploadName, fileName, mimeType, inputStream);
+        request.send(inputStream);
       }
     }
   }
